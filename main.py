@@ -40,7 +40,15 @@ def main(page: ft.Page):
         # --- Función para iniciar un juego ---
         def start_game(category, difficulty):
             page.controls.clear()
-            game_page(page, user, category, difficulty, on_game_end)
+            # ⚡ Pasamos go_category como on_back_home para volver a category_page
+            game_page(
+                page,
+                user,
+                category,
+                difficulty,
+                on_game_end,
+                on_back_home=lambda: go_category()  
+            )
 
         # --- Ir a seleccionar categoría/dificultad ---
         def go_category(e=None):
@@ -73,4 +81,3 @@ def main(page: ft.Page):
     page.update()
 
 ft.app(target=main, view=ft.WEB_BROWSER)
-
