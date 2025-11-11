@@ -66,7 +66,7 @@ def main(page: ft.Page):
         # --- Ir al ranking ---
         def go_ranking(e=None):
             page.controls.clear()
-            page.add(ranking_page(page, user=user, on_back_home=lambda: show_home(user)))
+            ranking_page(page, user=user, on_back_home=lambda: show_home(user))
             page.update()
 
         # --- Mostrar home ---
