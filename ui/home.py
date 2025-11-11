@@ -11,7 +11,9 @@ def home_page(page, user, on_play, on_ranking):
         [
             ft.Icon(ft.Icons.SPORTS_ESPORTS, size=90, color=ft.Colors.PURPLE_400),
             ft.Text("ANI_TRIVIA", size=44, weight="bold", color=ft.Colors.PURPLE_200),
-            ft.Text(f"👋 Bienvenido, {user['username']}!", size=22, color=ft.Colors.PINK_200, italic=True),
+           ft.Text(f"👋 Bienvenido, {user['username']}!", size=22, color=ft.Colors.PINK_200, italic=True),
+           ft.Text("¡Prepárate para poner a prueba tus conocimientos!", size=10, color=ft.Colors.PURPLE_100, italic=True),
+
         ],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         spacing=8,
