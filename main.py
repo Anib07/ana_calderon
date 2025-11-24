@@ -40,15 +40,7 @@ def main(page: ft.Page):
         # --- Función para iniciar un juego ---
         def start_game(category, difficulty):
             page.controls.clear()
-            # ⚡ Pasamos go_category como on_back_home para volver a category_page
-            game_page(
-                page,
-                user,
-                category,
-                difficulty,
-                on_game_end,
-                on_back_home=lambda: go_category()  
-            )
+            game_page(page, user, category, difficulty, on_game_end)
 
         # --- Ir a seleccionar categoría/dificultad ---
         def go_category(e=None):
@@ -66,7 +58,7 @@ def main(page: ft.Page):
         # --- Ir al ranking ---
         def go_ranking(e=None):
             page.controls.clear()
-            ranking_page(page, user=user, on_back_home=lambda: show_home(user))
+            page.add(ranking_page(page, user=user, on_back_home=lambda: show_home(user)))
             page.update()
 
         # --- Mostrar home ---
@@ -81,3 +73,4 @@ def main(page: ft.Page):
     page.update()
 
 ft.app(target=main, view=ft.WEB_BROWSER)
+

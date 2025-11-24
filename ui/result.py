@@ -8,7 +8,7 @@ def result_page(page, user, score, category, difficulty, correct, wrong, on_play
 
     # --- Icono y título ---
     trophy_icon = ft.Icon(
-        ft.Icons.STAR,  # Ícono compatible
+        ft.Icons.STAR,  # Ícono 
         size=90,
         color=ft.Colors.YELLOW_400
     )
