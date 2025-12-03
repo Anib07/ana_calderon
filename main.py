@@ -5,6 +5,7 @@ from ui.category import category_page
 from ui.game import game_page
 from ui.result import result_page
 from ui.ranking import ranking_page
+from ui.manual import manual_page
 from db import save_score
 
 def main(page: ft.Page):
@@ -51,7 +52,6 @@ def main(page: ft.Page):
                 page.controls.clear()
                 show_home(user)
 
-            # Llamada correcta a category_page con on_back_home
             page.add(category_page(page, on_start_game=start_game, on_back_home=back_to_home))
             page.update()
 
@@ -61,8 +61,20 @@ def main(page: ft.Page):
             page.add(ranking_page(page, user=user, on_back_home=lambda: show_home(user)))
             page.update()
 
+        # --- Ir al manual ---
+        def go_manual(e=None):
+            page.controls.clear()
+            page.add(manual_page(page, on_back_home=lambda: show_home(user)))
+            page.update()
+
         # --- Mostrar home ---
-        page.add(home_page(page, user, on_play=go_category, on_ranking=go_ranking))
+        page.add(home_page(
+            page,
+            user,
+            on_play=go_category,
+            on_ranking=go_ranking,
+            on_manual=go_manual
+        ))
         page.update()
 
     # --- Login ---
@@ -72,5 +84,6 @@ def main(page: ft.Page):
     page.add(login_page(page, on_login=on_login_success))
     page.update()
 
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main, view=ft.WEB_BROWSER, assets_dir="assets")
+
 

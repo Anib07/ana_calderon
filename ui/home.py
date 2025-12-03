@@ -1,7 +1,7 @@
 import flet as ft
-from ui.login import login_page  
+from ui.login import login_page
 
-def home_page(page, user, on_play, on_ranking):
+def home_page(page, user, on_play, on_ranking, on_manual):
     page.bgcolor = ft.Colors.BLACK
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -11,9 +11,10 @@ def home_page(page, user, on_play, on_ranking):
         [
             ft.Icon(ft.Icons.SPORTS_ESPORTS, size=90, color=ft.Colors.PURPLE_400),
             ft.Text("ANI_TRIVIA", size=44, weight="bold", color=ft.Colors.PURPLE_200),
-           ft.Text(f"👋 Bienvenido, {user['username']}!", size=22, color=ft.Colors.PINK_200, italic=True),
-           ft.Text("¡Prepárate para poner a prueba tus conocimientos!", size=10, color=ft.Colors.PURPLE_100, italic=True),
-
+            ft.Text(f"👋 Bienvenido, {user['username']}!", size=22,
+                    color=ft.Colors.PINK_200, italic=True),
+            ft.Text("¡Prepárate para poner a prueba tus conocimientos!", size=10,
+                    color=ft.Colors.PURPLE_100, italic=True),
         ],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         spacing=8,
@@ -62,7 +63,7 @@ def home_page(page, user, on_play, on_ranking):
         page.dialog.open = False
         page.update()
         page.controls.clear()
-        page.add(login_page(page, on_login=lambda user: print("Volvió al login"))) 
+        page.add(login_page(page, on_login=lambda user: print("Volvió al login")))
         page.update()
 
     # --- Botones principales ---
@@ -70,7 +71,8 @@ def home_page(page, user, on_play, on_ranking):
         [
             make_glow_button("🎮 JUGAR", ft.Icons.PLAY_ARROW, [ft.Colors.PURPLE_500, ft.Colors.BLUE_400], lambda e: on_play()),
             make_glow_button("🏆 RANKING", ft.Icons.LEADERBOARD, [ft.Colors.PINK_500, ft.Colors.ORANGE_400], lambda e: on_ranking()),
-            make_glow_button("🚪 SALIR", ft.Icons.EXIT_TO_APP, [ft.Colors.RED_600, ft.Colors.PINK_400], confirm_exit),
+            make_glow_button("📘 MANUAL DE USUARIO", ft.Icons.MENU_BOOK, [ft.Colors.TEAL_500, ft.Colors.CYAN_400], lambda e: on_manual()),
+            make_glow_button("🚪 CERRAR SESIÓN", ft.Icons.EXIT_TO_APP, [ft.Colors.RED_600, ft.Colors.PINK_400], confirm_exit),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -79,30 +81,50 @@ def home_page(page, user, on_play, on_ranking):
 
     # --- Contenedor central ---
     content = ft.Container(
-        content=ft.Column([header, ft.Divider(height=30, thickness=2, color=ft.Colors.PURPLE_400), buttons],
-                          alignment=ft.MainAxisAlignment.CENTER,
-                          horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                          spacing=35),
-        width=450,
+        content=ft.Column(
+            [header, ft.Divider(height=30, thickness=2, color=ft.Colors.PURPLE_400), buttons],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=35,
+        ),
         padding=40,
         border_radius=25,
-        gradient=ft.LinearGradient(begin=ft.alignment.top_left, end=ft.alignment.bottom_right,
-                                   colors=[ft.Colors.with_opacity(0.3, ft.Colors.PURPLE_700), ft.Colors.BLACK]),
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=[ft.Colors.with_opacity(0.3, ft.Colors.PURPLE_700), ft.Colors.BLACK]
+        ),
         border=ft.border.all(1, ft.Colors.PURPLE_600),
         alignment=ft.alignment.center,
     )
 
-    # --- Fondo decorativo ---
-    background = ft.Stack(
+    # --- Fondo decorativo con scroll usando Column ---
+    background = ft.Column(
         [
-            ft.Container(gradient=ft.RadialGradient(center=ft.alignment.center, radius=1.3,
-                                                   colors=[ft.Colors.with_opacity(0.25, ft.Colors.PINK_600), ft.Colors.BLACK]),
-                         expand=True),
-            ft.Image(src="https://cdn-icons-png.flaticon.com/512/2821/2821873.png", width=160, height=160, opacity=0.08, right=40, top=40),
-            ft.Image(src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=200, height=200, opacity=0.08, left=60, bottom=60),
-            ft.Row([content], alignment=ft.MainAxisAlignment.CENTER, vertical_alignment=ft.CrossAxisAlignment.CENTER, expand=True),
+            ft.Stack(
+                [
+                    ft.Container(
+                        gradient=ft.RadialGradient(
+                            center=ft.alignment.center,
+                            radius=1.3,
+                            colors=[
+                                ft.Colors.with_opacity(0.25, ft.Colors.PINK_600),
+                                ft.Colors.BLACK
+                            ]
+                        ),
+                        expand=True
+                    ),
+                    ft.Image(src="https://cdn-icons-png.flaticon.com/512/2821/2821873.png",
+                             width=160, height=160, opacity=0.08, right=40, top=40),
+                    ft.Image(src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                             width=200, height=200, opacity=0.08, left=60, bottom=60),
+                    ft.Column([content], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True),
+                ],
+                expand=True
+            )
         ],
-        expand=True,
+        scroll="always",  # <-- esto permite desplazamiento
+        expand=True
     )
 
     return background
