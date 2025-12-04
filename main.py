@@ -20,10 +20,8 @@ def main(page: ft.Page):
 
         # --- Función que se llama al terminar un juego ---
         def on_game_end(score, category, difficulty, correct, wrong):
-            # Guardar puntuación en la base de datos
             save_score(user['id'], score, category, difficulty)
 
-            # Mostrar resultados
             page.controls.clear()
             result_page(
                 page,
@@ -46,13 +44,7 @@ def main(page: ft.Page):
         # --- Ir a seleccionar categoría/dificultad ---
         def go_category(e=None):
             page.controls.clear()
-
-            # Función para volver a home
-            def back_to_home():
-                page.controls.clear()
-                show_home(user)
-
-            page.add(category_page(page, on_start_game=start_game, on_back_home=back_to_home))
+            page.add(category_page(page, on_start_game=start_game, on_back_home=lambda: show_home(user)))
             page.update()
 
         # --- Ir al ranking ---
@@ -85,5 +77,3 @@ def main(page: ft.Page):
     page.update()
 
 ft.app(target=main, view=ft.WEB_BROWSER, assets_dir="assets")
-
-

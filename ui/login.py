@@ -1,7 +1,6 @@
 import flet as ft
 from db import check_user, register_user
 
-
 def login_page(page, on_login):
     # --- Configuración general ---
     page.bgcolor = ft.Colors.BLACK
@@ -36,9 +35,30 @@ def login_page(page, on_login):
 
     message = ft.Text("", size=16, weight="bold", color=ft.Colors.WHITE)
 
-    # --- Lógica de botones ---
+    # --- Funciones ---
     def login_click(e):
-        user = check_user(username.value, password.value)
+        user_val = username.value.strip()
+        pass_val = password.value.strip()
+
+        # Validaciones
+        if not user_val or not pass_val:
+            message.value = "⚠️ Todos los campos son obligatorios"
+            message.color = ft.Colors.ORANGE_400
+            page.update()
+            return
+        if len(user_val) < 3:
+            message.value = "⚠️ El usuario debe tener al menos 3 caracteres"
+            message.color = ft.Colors.ORANGE_400
+            page.update()
+            return
+        if len(pass_val) < 6:
+            message.value = "⚠️ La contraseña debe tener al menos 6 caracteres"
+            message.color = ft.Colors.ORANGE_400
+            page.update()
+            return
+
+        # Verificación en la base de datos
+        user = check_user(user_val, pass_val)
         if user:
             on_login(user)
         else:
@@ -47,7 +67,28 @@ def login_page(page, on_login):
             page.update()
 
     def register_click(e):
-        if register_user(username.value, password.value):
+        user_val = username.value.strip()
+        pass_val = password.value.strip()
+
+        # Validaciones
+        if not user_val or not pass_val:
+            message.value = "⚠️ Todos los campos son obligatorios"
+            message.color = ft.Colors.ORANGE_400
+            page.update()
+            return
+        if len(user_val) < 3:
+            message.value = "⚠️ El usuario debe tener al menos 3 caracteres"
+            message.color = ft.Colors.ORANGE_400
+            page.update()
+            return
+        if len(pass_val) < 6:
+            message.value = "⚠️ La contraseña debe tener al menos 6 caracteres"
+            message.color = ft.Colors.ORANGE_400
+            page.update()
+            return
+
+        # Registro en la base de datos
+        if register_user(user_val, pass_val):
             message.value = "✅ Usuario registrado con éxito"
             message.color = ft.Colors.GREEN_400
         else:
@@ -56,27 +97,10 @@ def login_page(page, on_login):
         page.update()
 
     # --- Elementos visuales ---
-    logo = ft.Icon(
-        name=ft.Icons.SPORTS_ESPORTS,
-        size=90,
-        color=ft.Colors.PURPLE_400,
-    )
+    logo = ft.Icon(name=ft.Icons.SPORTS_ESPORTS, size=90, color=ft.Colors.PURPLE_400)
+    title = ft.Text("ANI_TRIVIA", size=40, weight="bold", color=ft.Colors.PURPLE_300)
+    subtitle = ft.Text("⚡️ Desafía tu mente ⚡️", size=18, italic=True, color=ft.Colors.PINK_200)
 
-    title = ft.Text(
-        "ANI_TRIVIA",
-        size=40,
-        weight="bold",
-        color=ft.Colors.PURPLE_300,
-    )
-
-    subtitle = ft.Text(
-        "⚡️ Desafía tu mente ⚡️",
-        size=18,
-        italic=True,
-        color=ft.Colors.PINK_200,
-    )
-
-    # --- Botones ---
     login_btn = ft.ElevatedButton(
         "INICIAR SESIÓN",
         icon=ft.Icons.PLAY_ARROW,
@@ -113,11 +137,7 @@ def login_page(page, on_login):
                 ft.Divider(height=15, thickness=2, color=ft.Colors.PURPLE_400),
                 username,
                 password,
-                ft.Row(
-                    [login_btn, register_btn],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=20,
-                ),
+                ft.Row([login_btn, register_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                 message,
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -139,19 +159,14 @@ def login_page(page, on_login):
     # --- Fondo con decoración ---
     background = ft.Stack(
         [
-            # Fondo con gradiente suave
             ft.Container(
                 gradient=ft.RadialGradient(
                     center=ft.alignment.center,
                     radius=1.2,
-                    colors=[
-                        ft.Colors.with_opacity(0.25, ft.Colors.PINK_600),
-                        ft.Colors.BLACK,
-                    ],
+                    colors=[ft.Colors.with_opacity(0.25, ft.Colors.PINK_600), ft.Colors.BLACK],
                 ),
                 expand=True,
             ),
-            # Iconos decorativos
             ft.Image(
                 src="https://cdn-icons-png.flaticon.com/512/2821/2821873.png",
                 width=140,
@@ -168,7 +183,6 @@ def login_page(page, on_login):
                 left=60,
                 bottom=60,
             ),
-            # Contenido principal
             ft.Row(
                 [login_card],
                 alignment=ft.MainAxisAlignment.CENTER,

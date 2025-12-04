@@ -2,7 +2,7 @@ import flet as ft
 import threading
 import time
 import random
-from db import get_connection 
+from db import get_connection
 
 def game_page(page, user, category, difficulty, on_game_end):
     page.title = f"Trivia - {category} ({difficulty})"
@@ -33,25 +33,25 @@ def game_page(page, user, category, difficulty, on_game_end):
     timer_bar = ft.ProgressBar(width=250, value=1.0, color=ft.Colors.GREEN_400)
     options_container = ft.Column(spacing=12, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
-    # --- Cargar preguntas desde MySQL ---
+    # --- Cargar preguntas desde SQLite ---
     preguntas = []
     conn = get_connection()
-    if conn:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute(
-            "SELECT * FROM questions WHERE category=%s AND difficulty=%s",
-            (category, difficulty)
-        )
-        rows = cursor.fetchall()
-        for row in rows:
-            opciones = [row["option1"], row["option2"], row["option3"], row["option4"]]
-            preguntas.append({
-                "q": row["question"],
-                "options": opciones,
-                "a": opciones[row["correct_option"] - 1]
-            })
-        cursor.close()
-        conn.close()
+    conn.row_factory = lambda cursor, row: {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM questions WHERE category=? AND difficulty=?",
+        (category, difficulty)
+    )
+    rows = cursor.fetchall()
+    for row in rows:
+        opciones = [row["option1"], row["option2"], row["option3"], row["option4"]]
+        preguntas.append({
+            "q": row["question"],
+            "options": opciones,
+            "a": opciones[row["correct_option"] - 1]
+        })
+    cursor.close()
+    conn.close()
 
     if not preguntas:
         message.value = "No hay preguntas disponibles para esta categoría y dificultad."
@@ -179,7 +179,7 @@ def game_page(page, user, category, difficulty, on_game_end):
     card = ft.Container(
         content=ft.Column(
             [
-                finish_button,  # botón agregado arriba
+                finish_button,
                 ft.Text(f"{category} - Nivel {difficulty}", size=20, color=ft.Colors.PURPLE_300),
                 question_text,
                 timer_label,

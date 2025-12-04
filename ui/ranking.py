@@ -11,7 +11,8 @@ def ranking_page(page, user=None, on_back_home=None):
     conn = get_connection()
     ranking = []
     if conn:
-        cursor = conn.cursor(dictionary=True)
+        # Cursor normal, pero con row_factory en la conexión
+        cursor = conn.cursor()
         cursor.execute("""
             SELECT u.username, s.score, s.category, s.difficulty
             FROM scores s
@@ -50,6 +51,7 @@ def ranking_page(page, user=None, on_back_home=None):
             ft.Colors.WHITE
         )
 
+        # Acceder a datos usando r["columna"] gracias a row_factory
         rows.append(
             ft.DataRow(
                 cells=[

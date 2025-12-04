@@ -1,60 +1,58 @@
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
+from datetime import datetime
 
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",  # tu contraseña
-    "database": "ani_trivia"
-}
+DB_FILE = "ani_trivia.db"
 
 def get_connection():
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        return conn
-    except Error as e:
-        print(f"Error al conectar a MySQL: {e}")
-        return None
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = lambda cursor, row: {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
+    return conn
 
-def check_user(username, password):
-    conn = get_connection()
-    if conn:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username, password))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        return user
-    return None
-
-def register_user(username, password):
-    conn = get_connection()
-    if conn:
-        cursor = conn.cursor()
-        try:
-            cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
-            conn.commit()
-            return True
-        except:
-            return False
-        finally:
-            cursor.close()
-            conn.close()
-
-
+# --- Guardar puntaje ---
 def save_score(user_id, score, category, difficulty):
     conn = get_connection()
-    if conn:
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "INSERT INTO scores (user_id, score, category, difficulty) VALUES (%s, %s, %s, %s)",
-                (user_id, score, category, difficulty)
-            )
-            conn.commit()
-        except Exception as e:
-            print("Error al guardar score:", e)
-        finally:
-            cursor.close()
-            conn.close()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO scores (user_id, score, category, difficulty, date_played)
+        VALUES (?, ?, ?, ?, ?)
+    """, (user_id, score, category, difficulty, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    conn.commit()
+    conn.close()
+
+# --- Obtener preguntas ---
+def get_questions(category, difficulty):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM questions WHERE category=? AND difficulty=?
+    """, (category, difficulty))
+    result = cursor.fetchall()
+    conn.close()
+    return result
+
+# --- Registrar usuario ---
+def register_user(username, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    finally:
+        conn.close()
+
+
+# --- Verificar usuario (login) ---
+def check_user(username, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+    user = cursor.fetchone()
+    conn.close()
+    if user:
+        return user  # devuelve diccionario con id, username, password
+    else:
+        return None
 
