@@ -44,13 +44,13 @@ def category_page(page, on_start_game, on_back_home):
             message.color = ft.Colors.RED_400
             page.update()
 
-    # --- Botones con estilo gamer ---
+    # --- Botones categoría ---
     category_buttons = ft.Row(
         [ft.ElevatedButton(
             c,
             on_click=partial(select_category, c),
-            width=140 if small_screen else 160,
-            height=50 if small_screen else 60,
+            width=small_screen and 120 or 160,
+            height=small_screen and 45 or 60,
             style=ft.ButtonStyle(
                 bgcolor=ft.Colors.PURPLE_900,
                 color=ft.Colors.WHITE,
@@ -65,12 +65,13 @@ def category_page(page, on_start_game, on_back_home):
     )
     category_btn_refs.extend(category_buttons.controls)
 
+    # --- Botones dificultad ---
     difficulty_buttons = ft.Row(
         [ft.ElevatedButton(
             d,
             on_click=partial(select_difficulty, d),
-            width=120 if small_screen else 140,
-            height=45 if small_screen else 50,
+            width=small_screen and 100 or 140,
+            height=small_screen and 40 or 50,
             style=ft.ButtonStyle(
                 bgcolor=ft.Colors.PINK_900,
                 color=ft.Colors.WHITE,
@@ -80,15 +81,16 @@ def category_page(page, on_start_game, on_back_home):
             )
         ) for d in difficulties],
         alignment=ft.MainAxisAlignment.CENTER,
-        spacing=15
+        spacing=15,
+        wrap=True
     )
     difficulty_btn_refs.extend(difficulty_buttons.controls)
 
     start_button = ft.ElevatedButton(
         "🎮 COMENZAR",
         on_click=start_game_click,
-        width=200,
-        height=60,
+        width=small_screen and 160 or 200,
+        height=small_screen and 45 or 60,
         style=ft.ButtonStyle(
             bgcolor=ft.Colors.AMBER_800,
             color=ft.Colors.BLACK,
@@ -101,8 +103,8 @@ def category_page(page, on_start_game, on_back_home):
     back_button = ft.ElevatedButton(
         "⬅️ Volver",
         on_click=lambda e: on_back_home(),
-        width=160,
-        height=50,
+        width=small_screen and 120 or 160,
+        height=small_screen and 40 or 50,
         style=ft.ButtonStyle(
             bgcolor=ft.Colors.GREY_800,
             color=ft.Colors.WHITE,
@@ -112,13 +114,14 @@ def category_page(page, on_start_game, on_back_home):
         )
     )
 
-    # --- Tarjeta central estilo gamer ---
+    # --- Tarjeta central ---
+    card_width = min(650, page.width * 0.9)
     card = ft.Container(
         content=ft.Column(
             [
-                ft.Icon(ft.Icons.GAMES, size=90, color=ft.Colors.PURPLE_400),
+                ft.Icon(ft.Icons.GAMES, size=small_screen and 70 or 90, color=ft.Colors.PURPLE_400),
                 ft.Text("Selecciona categoría y dificultad",
-                        size=28,
+                        size=small_screen and 22 or 28,
                         weight="bold",
                         color=ft.Colors.PURPLE_200,
                         text_align=ft.TextAlign.CENTER),
@@ -134,8 +137,8 @@ def category_page(page, on_start_game, on_back_home):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=20
         ),
-        width=small_screen and page.width - 40 or 650,
-        padding=ft.padding.all(40),
+        width=card_width,
+        padding=ft.padding.all(30),
         border_radius=30,
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_left,
@@ -147,8 +150,8 @@ def category_page(page, on_start_game, on_back_home):
         shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.PURPLE_800, offset=ft.Offset(0, 0))
     )
 
-    # --- Fondo gamer ---
-    layout = ft.Stack(
+    # --- Fondo con scroll para móviles ---
+    layout = ft.Column(
         [
             ft.Container(
                 expand=True,
@@ -158,14 +161,11 @@ def category_page(page, on_start_game, on_back_home):
                     colors=[ft.Colors.with_opacity(0.15, ft.Colors.PINK_600), ft.Colors.BLACK]
                 ),
             ),
-            ft.Image(src="https://cdn-icons-png.flaticon.com/512/2821/2821873.png",
-                     width=160, height=160, opacity=0.07, right=40, top=40),
-            ft.Image(src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                     width=200, height=200, opacity=0.07, left=60, bottom=60),
-            ft.Row([card], alignment=ft.MainAxisAlignment.CENTER,
-                   vertical_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
+            ft.Column([card], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         ],
-        expand=True
+        scroll=ft.ScrollMode.AUTO,
+        expand=True,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
 
     return layout
