@@ -5,10 +5,9 @@ Este proyecto es un **juego de trivia** donde los usuarios responden preguntas d
 ## Tecnologías utilizadas
 - Python 
 - Flet
-- MySQL
+- SQLite
 
 ## Cómo ejecutar el proyecto
-. Encender **XAMPP** y activar los servicios  **MySQL**.
 1. Clonar el repositorio:
    git clone https://github.com/Anib07/ana_calderon
 2. Entrar en la carpeta del proyecto:
