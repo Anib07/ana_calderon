@@ -2,16 +2,11 @@ import flet as ft
 from db import get_connection
 
 def ranking_page(page, user=None, on_back_home=None):
-    page.controls.clear()
-    page.bgcolor = ft.Colors.BLACK
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.vertical_alignment = ft.MainAxisAlignment.START
 
-    # Obtener ranking
+    # --- Obtener ranking ---
     conn = get_connection()
     ranking = []
     if conn:
-        # Cursor normal, pero con row_factory en la conexión
         cursor = conn.cursor()
         cursor.execute("""
             SELECT u.username, s.score, s.category, s.difficulty
@@ -25,10 +20,9 @@ def ranking_page(page, user=None, on_back_home=None):
         conn.close()
 
     if not ranking:
-        page.add(ft.Text("No hay resultados aún.", size=20, color=ft.Colors.AMBER_200))
-        return
+        return ft.Text("No hay resultados aún.", size=20, color=ft.Colors.AMBER_200)
 
-    # Función para medalla
+    # --- Función para medalla ---
     def get_medal(index):
         if index == 0:
             return "🥇"
@@ -38,20 +32,16 @@ def ranking_page(page, user=None, on_back_home=None):
             return "🥉"
         return f"{index+1}°"
 
-    # Crear filas
+    # --- Crear filas ---
     rows = []
     for i, r in enumerate(ranking):
         medal = get_medal(i)
-
-        # Colores especiales para top 3
         color = (
             ft.Colors.YELLOW_300 if i == 0 else
             ft.Colors.GREY_300 if i == 1 else
             ft.Colors.AMBER_300 if i == 2 else
             ft.Colors.WHITE
         )
-
-        # Acceder a datos usando r["columna"] gracias a row_factory
         rows.append(
             ft.DataRow(
                 cells=[
@@ -64,7 +54,7 @@ def ranking_page(page, user=None, on_back_home=None):
             )
         )
 
-    # Tabla
+    # --- Tabla de ranking ---
     ranking_table = ft.DataTable(
         columns=[
             ft.DataColumn(ft.Text("#", color=ft.Colors.PURPLE_300, weight="bold")),
@@ -80,7 +70,8 @@ def ranking_page(page, user=None, on_back_home=None):
         border_radius=10,
     )
 
-    # Card contenedor
+    # --- Card central ---
+    card_width = min(650, page.width * 0.9)
     ranking_card = ft.Container(
         content=ft.Column(
             [
@@ -97,38 +88,53 @@ def ranking_page(page, user=None, on_back_home=None):
                     on_click=lambda e: on_back_home() if on_back_home else None,
                     width=160,
                     height=45,
-                    style=ft.ButtonStyle(
-                        bgcolor=ft.Colors.PURPLE_600,
-                        color=ft.Colors.WHITE,
-                        shape=ft.RoundedRectangleBorder(radius=12),
-                    )
                 )
             ],
             spacing=20,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         ),
-        padding=20,
-        width=page.width * 0.95 if page.width < 600 else 550,
+        padding=30,
+        width=card_width,
+        border_radius=25,
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_left,
             end=ft.alignment.bottom_right,
-            colors=[
-                ft.Colors.with_opacity(0.4, ft.Colors.PURPLE_700),
-                ft.Colors.BLACK
-            ]
+            colors=[ft.Colors.with_opacity(0.3, ft.Colors.PURPLE_900), ft.Colors.BLACK]
         ),
-        border_radius=25,
-        border=ft.border.all(1, ft.Colors.PURPLE_600),
+        border=ft.border.all(2, ft.Colors.PURPLE_600),
         alignment=ft.alignment.center,
+        shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.PURPLE_800, offset=ft.Offset(0, 0))
     )
 
-    # Scroll general
-    scroll_layout = ft.Column(
-        controls=[ranking_card],
-        scroll=ft.ScrollMode.AUTO,
+    # --- Fondo y layout responsive ---
+    layout = ft.Container(
         expand=True,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        alignment=ft.alignment.center,
+        content=ft.Stack(
+            [
+                # Fondo degradado
+                ft.Container(
+                    expand=True,
+                    gradient=ft.RadialGradient(
+                        center=ft.alignment.center,
+                        radius=1.2,
+                        colors=[ft.Colors.with_opacity(0.15, ft.Colors.PINK_600), ft.Colors.BLACK]
+                    )
+                ),
+                # Card centrado con scroll
+                ft.Container(
+                    expand=True,
+                    alignment=ft.alignment.center,
+                    content=ft.Column(
+                        [ranking_card],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        scroll=ft.ScrollMode.AUTO
+                    )
+                )
+            ],
+            expand=True
+        )
     )
 
-    page.add(scroll_layout)
-    page.update()
+    return layout

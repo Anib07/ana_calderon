@@ -1,6 +1,7 @@
 import flet as ft
 from functools import partial
 
+
 def category_page(page, on_start_game, on_back_home):
     categories = ["Historia", "Ciencia", "Informática", "Deportes"]
     difficulties = ["Fácil", "Medio", "Difícil"]
@@ -14,6 +15,7 @@ def category_page(page, on_start_game, on_back_home):
     category_btn_refs = []
     difficulty_btn_refs = []
 
+    # --- FUNCIONES DE SELECCIÓN ---
     def update_message():
         if selected_category.current and selected_difficulty.current:
             message.value = f"✅ {selected_category.current} - {selected_difficulty.current}"
@@ -44,7 +46,7 @@ def category_page(page, on_start_game, on_back_home):
             message.color = ft.Colors.RED_400
             page.update()
 
-    # --- Botones categoría ---
+    # --- BOTONES DE CATEGORÍA ---
     category_buttons = ft.Row(
         [ft.ElevatedButton(
             c,
@@ -65,7 +67,7 @@ def category_page(page, on_start_game, on_back_home):
     )
     category_btn_refs.extend(category_buttons.controls)
 
-    # --- Botones dificultad ---
+    # --- BOTONES DE DIFICULTAD ---
     difficulty_buttons = ft.Row(
         [ft.ElevatedButton(
             d,
@@ -86,6 +88,7 @@ def category_page(page, on_start_game, on_back_home):
     )
     difficulty_btn_refs.extend(difficulty_buttons.controls)
 
+    # --- BOTONES PRINCIPALES ---
     start_button = ft.ElevatedButton(
         "🎮 COMENZAR",
         on_click=start_game_click,
@@ -114,17 +117,19 @@ def category_page(page, on_start_game, on_back_home):
         )
     )
 
-    # --- Tarjeta central ---
+    # --- TARJETA CENTRAL RESPONSIVE ---
     card_width = min(650, page.width * 0.9)
     card = ft.Container(
         content=ft.Column(
             [
                 ft.Icon(ft.Icons.GAMES, size=small_screen and 70 or 90, color=ft.Colors.PURPLE_400),
-                ft.Text("Selecciona categoría y dificultad",
-                        size=small_screen and 22 or 28,
-                        weight="bold",
-                        color=ft.Colors.PURPLE_200,
-                        text_align=ft.TextAlign.CENTER),
+                ft.Text(
+                    "Selecciona categoría y dificultad",
+                    size=small_screen and 22 or 28,
+                    weight="bold",
+                    color=ft.Colors.PURPLE_200,
+                    text_align=ft.TextAlign.CENTER
+                ),
                 ft.Divider(height=10, thickness=2, color=ft.Colors.PURPLE_500),
                 ft.Container(category_buttons, padding=ft.padding.all(10), border_radius=20,
                              bgcolor=ft.Colors.with_opacity(0.15, ft.Colors.PURPLE_900)),
@@ -150,22 +155,36 @@ def category_page(page, on_start_game, on_back_home):
         shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.PURPLE_800, offset=ft.Offset(0, 0))
     )
 
-    # --- Fondo con scroll para móviles ---
-    layout = ft.Column(
-        [
-            ft.Container(
-                expand=True,
-                gradient=ft.RadialGradient(
-                    center=ft.alignment.center,
-                    radius=1.2,
-                    colors=[ft.Colors.with_opacity(0.15, ft.Colors.PINK_600), ft.Colors.BLACK]
-                ),
-            ),
-            ft.Column([card], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-        ],
-        scroll=ft.ScrollMode.AUTO,
+    # --- FONDO RESPONSIVE CON SCROLL Y CENTRADO VERTICAL ---
+    layout = ft.Container(
         expand=True,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        alignment=ft.alignment.center,  # centro horizontal y vertical
+        content=ft.Stack(
+            [
+                # Fondo degradado
+                ft.Container(
+                    expand=True,
+                    gradient=ft.RadialGradient(
+                        center=ft.alignment.center,
+                        radius=1.2,
+                        colors=[ft.Colors.with_opacity(0.15, ft.Colors.PINK_600), ft.Colors.BLACK]
+                    ),
+                ),
+                # Card centrado
+                ft.Container(
+                    expand=True,
+                    alignment=ft.alignment.center,  # centro horizontal y vertical
+                    content=ft.Column(
+                        [card],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        scroll=ft.ScrollMode.AUTO
+                    )
+                )
+            ],
+            expand=True
+        )
     )
 
     return layout
+
