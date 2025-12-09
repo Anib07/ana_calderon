@@ -1,3 +1,6 @@
+
+  # --- Ejecutar python main.py ---
+
 import flet as ft
 from ui.login import login_page
 from ui.home import home_page
